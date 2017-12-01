@@ -18,6 +18,8 @@
 	<!-- <script src="bootstrap.min.js"></script> -->
 </head>
 <body>
+
+	<form name="myForm">
 	<img src="images/mgtbanner.jpg" alt="header image" >
 
 	<table>
@@ -97,26 +99,27 @@
 		<!-- <hr> -->
 	</div>
 
-	<table name="qrtable" width=60% cellspacing="0" cellpadding="6" border="1">
+	<table name="qrtable" id="qrtable" width=60% cellspacing="0" cellpadding="6" border="1">
 		<head>
 			<td>QR ID</td>
 			<td>Content</td>
 			<td>QR IMage</td>
 		</head>
-		<tbody id="trqrtable">
+		<tbody id="trqrtable" name="trqrtable">
 			<tr>
-				<td><input type="text1" name="qrid" id="qrid1" qrid_seq="1"></td>
+				<td><input type="text" name="qrid1" id="qrid1" qrid_seq="1"></td>
 				<td><textarea id="text1" name="qrcontent1" id="qrcontent1" qrcon_seq="1"></textarea></td>
 				<td><div id="container1"></div></td>
 			</tr>
 			<tr>
-				<td><input type="text2" name="qrid" id="qrid2" qrid_seq="2"></td>
+				<td><input type="text" name="qrid2" id="qrid2" qrid_seq="2" onfocus="addrow(2)"></td>
 				<td><textarea id="text2" name="qrcontent2" id="qrcontent2" qrcon_seq="2"></textarea></td>
 				<td><div id="container2"></div></td>
 			</tr>
 		</tbody>
 	</table>
 
+	<input type="hidden" name="linecnt" id="linecnt" value="2">
 
 	<input type="button" name="zipdownload" value="DownloadZip" id="download">
 
@@ -124,7 +127,7 @@
 
 
 
-
+	</form>
 
 	
 </body>

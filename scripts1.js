@@ -129,5 +129,51 @@
         update(linenum);
     }
 
+
+
     jq(init);
 }());
+
+
+function addrow(index){
+    var x=index;
+    x++;
+    qrid = "qrid"+x;
+    qrcontent = "qrcontent"+x;
+    container = "container" +x;
+    text = "text" +x;
+
+    var tbody = document.getElementById('trqrtable');
+    var row = document.createElement("TR");
+
+    var cell1 = document.createElement("TD");
+    var inp1 =  document.createElement("INPUT");
+    inp1.setAttribute("type","text");
+    inp1.setAttribute("name",qrid);
+    inp1.setAttribute("id",qrid);
+    inp1.setAttribute("qrid_seq",x);
+    // inp1.setAttribute('onfocus', addrow(x) );
+    // img2.onclick = function(){getgrn_wo(y);};
+    cell1.appendChild(inp1);
+
+
+    var cell2 = document.createElement("TD");
+    cell2.innerHTML='<textarea id='+text+' name='+qrcontent+' id='+qrcontent+' qrcon_seq='+x+'></textarea>';
+
+
+    var cell3 = document.createElement("TD");
+    cell3.innerHTML='<div id='+qrcontent+'></div>';
+
+    
+
+
+    row.appendChild(cell1);
+    row.appendChild(cell2);
+    row.appendChild(cell3);
+
+    tbody.appendChild(row);
+    
+
+    document.myForm.linecnt.value=x;
+
+}
