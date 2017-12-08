@@ -1,3 +1,4 @@
+$(document).ready(function(){
 (function () {
     'use strict';
 
@@ -30,10 +31,9 @@
 
             fill: jq('#fill').val(),
             background: jq('#background').val(),
-            // fill: jq('#img-buffer')[0],
 
-            text: jq('#text'+linenum).val(),
-            id: jq('#text'+linenum).attr('qrcon_seq'),
+            text: jq('#qrcontent'+linenum).val(),
+            id: jq('#qrcontent'+linenum).attr('qrcon_seq'),
             size: parseInt(jq('#size').val(), 10),
             radius: parseInt(jq('#radius').val(), 10) * 0.01,
             quiet: parseInt(jq('#quiet').val(), 10),
@@ -52,6 +52,13 @@
         };
 
         jq('#container'+linenum).empty().qrcode(options);
+
+        var j = 0;
+        $('#trqrtable').find('canvas').each(function() {
+            j++;
+        });
+
+        document.getElementById('qrcount').value = j;
     }
 
     function update(linenum) {
@@ -75,56 +82,376 @@
     }
 
     function download() {
-        // jq('#download').attr('href', jq('canvas')[0].toDataURL('image/png'));
 
         var zip = new JSZip();
-        zip.file("Hello.txt", "Hello World\n");
+        zip.file("README.txt", "QR Code Images Generated.\n");
         var img = zip.folder("images");
 
         var filename = "dec";
         var j = 1;
         $('#trqrtable').find('canvas').each(function() {
 
-            console.log("canvas");
+
             var mycanvasid = jq(this).attr('id');
-            console.log("url " + mycanvasid);
+
+            var line = jq(this).attr('canvascnt');
+            var qrval = jq('#qrid'+line).val();
 
             var canvas = document.getElementById(mycanvasid);
             var imageData = canvas.toDataURL('image/png');
             var imgsrc = imageData.split(',');
             var imgData = imgsrc[1];
-            var imgname = filename+j+'.png';
+            var imgname = qrval+'.png';
             img.file(imgname, imgData, {base64: true});
-            // console.log("mycanvasid " + imageData);
+
             j++;
         });
+
+
+        $('#trqrtable1').empty();
+        var linecnt =  document.getElementById('linecnt').value;
+
+        var i = 1;
+        while(i <= linecnt)
+        {
+            var qridval = $('#qrid'+i).val();
+            var qrcontval = $('#qrcontent'+i).val(); 
+
+
+
+
+            var tbody = document.getElementById('trqrtable1');
+            var row = document.createElement("TR");
+
+            var cell1 = document.createElement("TD");
+            cell1.innerHTML=qridval;
+
+            var cell2 = document.createElement("TD");
+            cell2.innerHTML=qrcontval;
+            
+            row.appendChild(cell1);
+            row.appendChild(cell2);
+
+            if (qrcontval !="" ) 
+            {
+                var canvas = document.getElementById("mycanvas"+i);
+                var imageData = canvas.toDataURL('image/png');
+                var imgsrc = imageData.split(',');
+                var imgData = imgsrc[1];
+
+
+                var cell3 = document.createElement("TD");
+                cell3.innerHTML="<center><img src=\""+imageData+"\"> </center>";
+
+                row.appendChild(cell3);
+
+            } 
+
+            tbody.appendChild(row);
+
+
+            i++;
+        }
+        
+        var doc = new jsPDF('p', 'pt', 'ledger');
+
+        var elem = document.getElementById('qrtable1');
+        var imgElements = document.querySelectorAll('#trqrtable1 tr td img');
+
+        var data = doc.autoTableHtmlToJson(elem);
+        var images = [];
+        var i = 0;
+        doc.autoTable(data.columns, data.rows, {
+        bodyStyles: {rowHeight: 100},
+        drawRow:function(row, data) {
+            row.height = 100;
+        },
+        drawCell: function(cell, opts) {
+            if (opts.column.dataKey === 2) {
+                images.push({
+                url: imgElements[i].src,
+                x: cell.textPos.x,
+                y: cell.textPos.y
+                }); 
+                i++;
+            }
+        },
+        addPageContent: function() {
+          for (var i = 0; i < images.length; i++) {
+            doc.addImage(images[i].url, images[i].x, images[i].y, 100, 100);
+          }
+        }
+        });
+
+
+        
+        zip.file("QRsummary.pdf", doc.output('blob'));
+        // doc.save("QRsummary.pdf");
+
 
         zip.generateAsync({type:"blob"})
         .then(function(content) {
             saveAs(content, "archive.zip");
         });
 
+
+
+
+
+
+
+    }
+
+    
+
+
+    function addrow(index){
+        var x=index;
+        x++;
+        var qrid = "qrid"+x;
+        var qrcontent = "qrcontent"+x;
+        var container = "container" +x;
+        var text = "text" +x;
+        var row_close = "row_close" +x;
+        var tablerow = "tablerow" +x;
+
+
+        var tbody = document.getElementById('trqrtable');
+        var row = document.createElement("TR");
+        row.setAttribute("id",tablerow);
+
+        var cell1 = document.createElement("TD");
+        var inp1 =  document.createElement("INPUT");
+        inp1.setAttribute("type","text");
+        inp1.setAttribute("name",qrid);
+        inp1.setAttribute("id",qrid);
+        inp1.setAttribute("qrid_seq",x);
+        inp1.setAttribute("value","QR-"+ x);
+        inp1.setAttribute("class",'qridclass');
+        cell1.appendChild(inp1);
+
+        var img1 = document.createElement("img");
+        img1.setAttribute("src","images/close1.png");
+        img1.setAttribute("alt","Cancel");
+        img1.setAttribute("id",row_close);
+        img1.style.display = "block";
+        img1.style.cursor = "pointer";
+        img1.onclick = function(){DeleteRow(x);};
+        cell1.appendChild(inp1);
+        cell1.appendChild(img1);
+
+
+        var cell2 = document.createElement("TD");
+        cell2.innerHTML='<textarea id='+qrcontent+' name='+qrcontent+' id='+qrcontent+' qrcon_seq='+x+' class=qrconclass  ></textarea>';
+
+        var cell3 = document.createElement("TD");
+        cell3.innerHTML='<div id='+container+'></div>';
+
+        
+
+
+        row.appendChild(cell1);
+        row.appendChild(cell2);
+        row.appendChild(cell3);
+
+        tbody.appendChild(row);
+           
+
+
+        document.myForm.linecnt.value=x;
+
+        if (x > 3) {
+            $('#row_close'+index).css('display','none');
+        }
+
+
+    }
+
+    function DeleteRow(line)
+    {   
+
+        $('#tablerow'+line).remove();
+        if (line >= 3) {
+            var id = parseInt(line) - 1;
+            $("#qrid"+id).attr('class','qridclass');
+            $('#row_close'+id).css('display','block');
+        }
+
+        var j = 0;
+        $('#trqrtable').find('canvas').each(function() {
+            j++;
+        });
+
+        document.getElementById('qrcount').value = j;
+    }
+
+    function GeneratePDF() {
+
+        $('#trqrtable1').empty();
+        var linecnt =  document.getElementById('linecnt').value;
+
+        var i = 1;
+        while(i <= linecnt)
+        {
+            var qridval = $('#qrid'+i).val();
+            var qrcontval = $('#qrcontent'+i).val(); 
+
+
+
+
+            var tbody = document.getElementById('trqrtable1');
+            var row = document.createElement("TR");
+
+            var cell1 = document.createElement("TD");
+            cell1.innerHTML=qridval;
+
+            var cell2 = document.createElement("TD");
+            cell2.innerHTML=qrcontval;
+            
+            row.appendChild(cell1);
+            row.appendChild(cell2);
+
+            if (qrcontval !="" ) 
+            {
+                var canvas = document.getElementById("mycanvas"+i);
+                var imageData = canvas.toDataURL('image/png');
+                var imgsrc = imageData.split(',');
+                var imgData = imgsrc[1];
+
+
+                var cell3 = document.createElement("TD");
+                cell3.innerHTML="<center><img src=\""+imageData+"\"> </center>";
+
+                row.appendChild(cell3);
+
+            } 
+
+            tbody.appendChild(row);
+
+
+            i++;
+        }
+        
+        var doc = new jsPDF('p', 'pt', 'ledger');
+
+        var elem = document.getElementById('qrtable1');
+        var imgElements = document.querySelectorAll('#trqrtable1 tr td img');
+
+        var data = doc.autoTableHtmlToJson(elem);
+        var images = [];
+        var i = 0;
+        doc.autoTable(data.columns, data.rows, {
+        bodyStyles: {rowHeight: 100},
+        drawRow:function(row, data) {
+            row.height = 100;
+        },
+        drawCell: function(cell, opts) {
+            if (opts.column.dataKey === 2) {
+                images.push({
+                url: imgElements[i].src,
+                x: cell.textPos.x,
+                y: cell.textPos.y
+                }); 
+                i++;
+            }
+        },
+        addPageContent: function() {
+          for (var i = 0; i < images.length; i++) {
+            doc.addImage(images[i].url, images[i].x, images[i].y, 100, 100);
+          }
+        }
+      });
+
+
+
+
+      doc.save("QRsummary.pdf");
+
+
+        // var pdf = new jsPDF('p', 'pt', 'ledger');
+
+        // var source = $('#qrsummary1').html(); 
+       
+        // var specialElementHandlers = {
+        //     '#bypassme' : function(element, renderer) {
+        //         return true
+        //     }
+        // };
+        // var margins = {
+        //     top : 80,
+        //     bottom : 60,
+        //     left : 60,
+        //     width : 522
+        // };
+        // pdf.fromHTML(source, // HTML string or DOM elem ref.
+        //     margins.left, // x coord
+        //     margins.top, { // y coord
+        //     'width' : margins.width, // max width of content on PDF
+        //     'elementHandlers' : specialElementHandlers
+        // },
+        // function(dispose) {
+        //     pdf.save('qrsummary.pdf');
+        // }, margins);
+
+
+        
+
+
+
     }
 
     function init() {
         var linenum = 0;
 
-        jq('#download').on('click', download);
+        jq('#download').on('click', function(){
+           var compname =  jq('#compname').val();
+           if (compname == "") { alert("Please Enter Company Name \n"); return false;}
+            download()
+        });
+
         jq('#image').on('change', onImageInput);
 
         jq('textarea').on('input change', function(){
-
             linenum = jq(this).attr('qrcon_seq');
+            var textval = jq(this).val();
+            jq(this).attr('value', textval);
             update(linenum);
         });
-            
-        
+
+
+
+        $(document).on('input change','.qrconclass', function()
+        {   
+            linenum = jq(this).attr('qrcon_seq');
+            update(linenum);       
+
+        });
+
+
+        $(document).on('input focus','.qridclass', function()
+        {
+
+            var qrid_seq = jq(this).attr('qrid_seq');
+            $("#qrid"+qrid_seq).removeAttr("class");
+            if (qrid_seq != "1") 
+            {
+                
+                addrow(qrid_seq);
+                update(linenum);
+            }
+        });
 
         jq('input,  select').on('input change', update(linenum));
 
 
+        jq('#GeneratePDF').on('click', function(){
 
+            GeneratePDF()
+        });
+
+                    
         jq(window).load(update(linenum));
+        // jq(window).on("load",update(linenum));
          
         update(linenum);
     }
@@ -135,45 +462,12 @@
 }());
 
 
-function addrow(index){
-    var x=index;
-    x++;
-    qrid = "qrid"+x;
-    qrcontent = "qrcontent"+x;
-    container = "container" +x;
-    text = "text" +x;
 
-    var tbody = document.getElementById('trqrtable');
-    var row = document.createElement("TR");
-
-    var cell1 = document.createElement("TD");
-    var inp1 =  document.createElement("INPUT");
-    inp1.setAttribute("type","text");
-    inp1.setAttribute("name",qrid);
-    inp1.setAttribute("id",qrid);
-    inp1.setAttribute("qrid_seq",x);
-    // inp1.setAttribute('onfocus', addrow(x) );
-    // img2.onclick = function(){getgrn_wo(y);};
-    cell1.appendChild(inp1);
+});
 
 
-    var cell2 = document.createElement("TD");
-    cell2.innerHTML='<textarea id='+text+' name='+qrcontent+' id='+qrcontent+' qrcon_seq='+x+'></textarea>';
 
 
-    var cell3 = document.createElement("TD");
-    cell3.innerHTML='<div id='+qrcontent+'></div>';
-
-    
 
 
-    row.appendChild(cell1);
-    row.appendChild(cell2);
-    row.appendChild(cell3);
 
-    tbody.appendChild(row);
-    
-
-    document.myForm.linecnt.value=x;
-
-}

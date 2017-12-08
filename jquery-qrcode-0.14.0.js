@@ -296,7 +296,7 @@
     // Returns a `canvas` element representing the QR code for the given settings.
     function createCanvas(settings) {
         // console.log("result " + JSON.stringify(settings));
-        var $canvas = jq('<canvas/>').attr('width', settings.size).attr('height', settings.size).attr('id', "mycanvas"+settings.id);
+        var $canvas = jq('<canvas/>').attr('width', settings.size).attr('height', settings.size).attr('id', "mycanvas"+settings.id).attr('canvascnt', settings.id);
         return drawOnCanvas($canvas, settings);
     }
 
@@ -367,7 +367,7 @@
     }
 
     function createHTML(settings) {
-        
+
 
         if (hasCanvas && settings.render === 'canvas') {
             return createCanvas(settings);
@@ -442,17 +442,20 @@
     // Register the plugin
     // -------------------
     jq.fn.qrcode = function (options) {
+
         var settings = jq.extend({}, defaults, options);
+
         return this.each(function (idx, el) {
             if (el.nodeName.toLowerCase() === 'canvas') {
-
                 drawOnCanvas(el, settings);
             } else {
                 jq(el).append(createHTML(settings));
             }
+            
         });
     };
 }(function () {
+
     // `qrcode` is the single public function defined by the `QR Code Generator`
     //---------------------------------------------------------------------
     //
@@ -473,6 +476,7 @@
 
     var qrcode = function() {
 
+
       //---------------------------------------------------------------------
       // qrcode
       //---------------------------------------------------------------------
@@ -483,6 +487,7 @@
        * @param errorCorrectLevel 'L','M','Q','H'
        */
       var qrcode = function(typeNumber, errorCorrectLevel) {
+
 
         var PAD0 = 0xEC;
         var PAD1 = 0x11;

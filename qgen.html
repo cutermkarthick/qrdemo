@@ -2,15 +2,21 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="x-ua-compatible" content="ie=edge">
-	<title>jQuery.qrcode 0.14.0 · Demo</title>
+	<title>Abqus QRcode</title>
 	<meta name="description" content="demo for jQuery.qrcode (https://larsjung.de/jquery-qrcode/)">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="shortcut icon" type="image/png" href="dummy.png">
-	<link rel="apple-touch-icon-precomposed" type="image/png" href="dummy.png">
+	<link rel="shortcut icon" type="image/png" href="images/favicon.png">
+	<link rel="apple-touch-icon-precomposed" type="image/png" href="favicon.png">
 	<link href="//fonts.googleapis.com/css?family=Ubuntu:300,400,700" rel="stylesheet">
 	<!-- <link href="bootstrap.min.css" rel="stylesheet"> -->
 
 	<script type="text/javascript" src="scripts/jszip.min.js"></script>
+	<script type="text/javascript" src="scripts/jspdf.min.js"></script>
+	<script type="text/javascript" src="scripts/jspdf.plugin.autotable.js"></script>
+	<script type="text/javascript" src="scripts/from_html.js"></script>
+	<script type="text/javascript" src="scripts/split_text_to_size.js"></script>
+	<script type="text/javascript" src="scripts/standard_fonts_metrics.js"></script>
+	<script type="text/javascript" src="scripts/cell.js"></script>
 	<script type="text/javascript" src="scripts/FileSaver.min.js"></script>
 	<script src="jquery.min.js"></script>
 	<script src="jquery-qrcode-0.14.0.js"></script>
@@ -39,7 +45,7 @@
 		</select>
 		<!-- <hr> -->
 		<label for="size" style="display:none">SIZE:</label>
-		<input id="size" type="range" value="150" min="100" max="500" step="10" style="display:none">
+		<input id="size" type="range" value="100" min="100" max="500" step="10" style="display:none">
 		<label for="fill" style="display:none">FILL</label>
 		<input id="fill" type="color" value="#333333" style="display:none">
 		<label for="background" style="display:none">BACKGROUND</label>
@@ -89,7 +95,7 @@
 		<input id="mposy" type="range" value="50" min="0" max="100" step="1" style="display:none">
 		<!-- <hr> -->
 		<label for="label" style="display:none">LABEL</label>
-		<input id="label" type="text" value="Abaqus" style="display:none">
+		<input id="label" type="text" value="karthick" style="display:none">
 		<label for="font" style="display:none">FONT NAME</label>
 		<input id="font" type="text" value="Ubuntu" style="display:none">
 		<label for="fontcolor" style="display:none">FONT COLOR</label>
@@ -99,29 +105,78 @@
 		<!-- <hr> -->
 	</div>
 
-	<table name="qrtable" id="qrtable" width=60% cellspacing="0" cellpadding="6" border="1">
-		<head>
-			<td>QR ID</td>
-			<td>Content</td>
-			<td>QR IMage</td>
-		</head>
-		<tbody id="trqrtable" name="trqrtable">
+	<div>
+
+	<div style="width: 60%; float: left;" name="qrsummary" id="qrsummary">
+		<table name="qrtable" id="qrtable" width=100% cellspacing="0" cellpadding="6" border="1">
+			<head>
+				<td>QR ID</td>
+				<td>Content</td>
+				<td>QR IMage</td>
+			</head>
+			<tbody id="trqrtable" name="trqrtable">
+				<tr>
+					<td><input type="text" name="qrid1" id="qrid1" qrid_seq="1" class="qridclass" value="QR-1"></td>
+					<td><textarea id="qrcontent1" name="qrcontent1" id="qrcontent1" qrcon_seq="1" class="qrconclass" value=""></textarea></td>
+					<td><div id="container1"></div></td>
+				</tr>
+				<tr>
+					<td><input type="text" name="qrid2" id="qrid2" qrid_seq="2" class="qridclass" value="QR-2"></td>
+					<td><textarea id="qrcontent2" name="qrcontent2" id="qrcontent2" qrcon_seq="2" class="qrconclass" value=""></textarea></td>
+					<td><div id="container2"></div></td>
+				</tr>
+			</tbody>
+		</table>
+
+	</div>
+
+
+	
+
+	<div style="width: 30%; float: right;">
+		<table  width=100% cellspacing="0" cellpadding="6" border="1">
+			<thead>
+				<td><center>Details</center></td>
+			</thead>
+			<tbody>
+				<tr>
+					<td><label for="compname">Company: </label><input type="text" name="compname" id="compname" value=""></td>
+				</tr>
+				<tr>
+					<td><label for="compname">Count: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+						<input type="text" name="qrcount" id="qrcount" value="" readonly="readonly"></td>
+				</tr>
+			</tbody>
+		</table>
+		<br>
+
+		<center><input type="button" name="zipdownload" value="DownloadZip" id="download"></center><br>
+		<center><input type="button" name="GeneratePDF" value="GeneratePDF" id="GeneratePDF"></center><br>
+		
+
+
+	</div>
+		<br style="clear:both;"/>
+	</div>
+
+
+	<div style="width: 60%; float: left; display: none;" name="qrsummary1" id="qrsummary1">
+		<table name="qrtable1" id="qrtable1" width=100% cellspacing="0" cellpadding="6" border="1">
 			<tr>
-				<td><input type="text" name="qrid1" id="qrid1" qrid_seq="1"></td>
-				<td><textarea id="text1" name="qrcontent1" id="qrcontent1" qrcon_seq="1"></textarea></td>
-				<td><div id="container1"></div></td>
+				<td>QR ID</td>
+				<td>Content</td>
+				<td>QR IMage</td>
 			</tr>
-			<tr>
-				<td><input type="text" name="qrid2" id="qrid2" qrid_seq="2" onfocus="addrow(2)"></td>
-				<td><textarea id="text2" name="qrcontent2" id="qrcontent2" qrcon_seq="2"></textarea></td>
-				<td><div id="container2"></div></td>
-			</tr>
-		</tbody>
-	</table>
+			<tbody id="trqrtable1" name="trqrtable1">
+				
+			</tbody>
+		</table>
+
+	</div>
 
 	<input type="hidden" name="linecnt" id="linecnt" value="2">
 
-	<input type="button" name="zipdownload" value="DownloadZip" id="download">
+	
 
 	<!-- <div id="container"></div> -->
 
@@ -129,6 +184,7 @@
 
 	</form>
 
-	
+
+
 </body>
 </html>
