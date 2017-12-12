@@ -177,34 +177,63 @@ $(document).ready(function(){
         doc.autoTable(data.columns, data.rows, {
         bodyStyles: {rowHeight: 100},
         drawRow:function(row, data) {
-
+            console.log("row " + JSON.stringify(data));
             row.height = 100;
         },
         drawCell: function(cell, opts) {
             
-       
+
+
+            // if (opts.column.dataKey === 1) {
+
+            //     if(cell.text == ""){
+            //         var imagecheck = 0;
+
+            //     }else{
+            //         var imagecheck = 1;
+
+            //         images.push({
+            //             url: imgElements[i].src,
+            //             x: 166.5,
+            //             y: 475
+            //         });
+            //     }
+
+                
+
+            //     i++;
+                
+            // }
+
 
 
             if (opts.column.dataKey === 2) {
-                if (typeof imgElements[i].src === "undefined"){
-                console.log('the property is not available...'); // print into console
-            }
-                images.push({
-                url: imgElements[i].src,
-                x: cell.textPos.x,
-                y: cell.textPos.y
-                }); 
+                console.log("images push " );
+
+                    images.push({
+                    url: imgElements[i].src,
+                    x: cell.textPos.x,
+                    y: cell.textPos.y
+                    });    
+
+                 
                 i++;
             }
+
+            
+
         },
         addPageContent: function() {
+            
           for (var i = 0; i < images.length; i++) {
             doc.addImage(images[i].url, images[i].x, images[i].y, 100, 100);
+
           }
         }
         });
 
-
+        
+       
         
         zip.file("QRsummary.pdf", doc.output('blob'));
         // doc.save("QRsummary.pdf");
