@@ -131,21 +131,22 @@ $(document).ready(function(){
 
 
 
-
             var tbody = document.getElementById('trqrtable1');
-            var row = document.createElement("TR");
 
-            var cell1 = document.createElement("TD");
-            cell1.innerHTML=qridval;
-
-            var cell2 = document.createElement("TD");
-            cell2.innerHTML=qrcontval;
             
-            row.appendChild(cell1);
-            row.appendChild(cell2);
 
             if (qrcontval !="" ) 
-            {
+            {   
+                var row = document.createElement("TR");
+
+                var cell1 = document.createElement("TD");
+                cell1.innerHTML=qridval;
+
+                var cell2 = document.createElement("TD");
+                cell2.innerHTML=qrcontval;
+                
+                
+
                 var canvas = document.getElementById("mycanvas"+i);
                 var imageData = canvas.toDataURL('image/png');
                 var imgsrc = imageData.split(',');
@@ -155,17 +156,24 @@ $(document).ready(function(){
                 var cell3 = document.createElement("TD");
                 cell3.innerHTML="<center><img src=\""+imageData+"\"> </center>";
 
+                row.appendChild(cell1);
+                row.appendChild(cell2);
                 row.appendChild(cell3);
+
+                tbody.appendChild(row);
 
             } 
 
-            tbody.appendChild(row);
+            
 
 
             i++;
         }
         
         var doc = new jsPDF('p', 'pt', 'ledger');
+        doc.text("Left aligned text",2,25);
+        // doc.myText("Centered text",{align: "center"},0,1);
+
 
         var elem = document.getElementById('qrtable1');
         var imgElements = document.querySelectorAll('#trqrtable1 tr td img');
@@ -177,45 +185,25 @@ $(document).ready(function(){
         doc.autoTable(data.columns, data.rows, {
         bodyStyles: {rowHeight: 100},
         drawRow:function(row, data) {
-            console.log("row " + JSON.stringify(data));
-            row.height = 100;
+            if (row.cells[1].text != "") 
+            {
+                row.height = 100;
+            }
         },
         drawCell: function(cell, opts) {
             
 
-
-            // if (opts.column.dataKey === 1) {
-
-            //     if(cell.text == ""){
-            //         var imagecheck = 0;
-
-            //     }else{
-            //         var imagecheck = 1;
-
-            //         images.push({
-            //             url: imgElements[i].src,
-            //             x: 166.5,
-            //             y: 475
-            //         });
-            //     }
-
-                
-
-            //     i++;
-                
-            // }
-
-
-
             if (opts.column.dataKey === 2) {
-                console.log("images push " );
-
+                
+                if (opts.row.cells[1].text != "") 
+                {
                     images.push({
                     url: imgElements[i].src,
                     x: cell.textPos.x,
                     y: cell.textPos.y
-                    });    
-
+                    }); 
+                }
+                       
                  
                 i++;
             }
@@ -401,19 +389,20 @@ $(document).ready(function(){
 
 
             var tbody = document.getElementById('trqrtable1');
-            var row = document.createElement("TR");
-
-            var cell1 = document.createElement("TD");
-            cell1.innerHTML=qridval;
-
-            var cell2 = document.createElement("TD");
-            cell2.innerHTML=qrcontval;
             
-            row.appendChild(cell1);
-            row.appendChild(cell2);
 
             if (qrcontval !="" ) 
-            {
+            {   
+                var row = document.createElement("TR");
+
+                var cell1 = document.createElement("TD");
+                cell1.innerHTML=qridval;
+
+                var cell2 = document.createElement("TD");
+                cell2.innerHTML=qrcontval;
+                
+                
+
                 var canvas = document.getElementById("mycanvas"+i);
                 var imageData = canvas.toDataURL('image/png');
                 var imgsrc = imageData.split(',');
@@ -423,11 +412,15 @@ $(document).ready(function(){
                 var cell3 = document.createElement("TD");
                 cell3.innerHTML="<center><img src=\""+imageData+"\"> </center>";
 
+                row.appendChild(cell1);
+                row.appendChild(cell2);
                 row.appendChild(cell3);
+
+                tbody.appendChild(row);
 
             } 
 
-            tbody.appendChild(row);
+            
 
 
             i++;
