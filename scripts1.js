@@ -195,15 +195,63 @@ $(document).ready(function(){
         });
 
 
-
-
-
-
-
     }
 
     
+    function printQR() 
+    {
 
+        $('#trqrtable1').empty();
+        var linecnt =  document.getElementById('linecnt').value;
+
+        var i = 1;
+        while(i <= linecnt)
+        {
+            var qridval = $('#qrid'+i).val();
+            var qrcontval = $('#qrcontent'+i).val(); 
+
+
+
+
+            var tbody = document.getElementById('trqrtable1');
+            var row = document.createElement("TR");
+
+            var cell1 = document.createElement("TD");
+            cell1.innerHTML=qridval;
+
+            var cell2 = document.createElement("TD");
+            cell2.innerHTML=qrcontval;
+            
+            row.appendChild(cell1);
+            row.appendChild(cell2);
+
+            if (qrcontval !="" ) 
+            {
+                var canvas = document.getElementById("mycanvas"+i);
+                var imageData = canvas.toDataURL('image/png');
+                var imgsrc = imageData.split(',');
+                var imgData = imgsrc[1];
+
+
+                var cell3 = document.createElement("TD");
+                cell3.innerHTML="<center><img src=\""+imageData+"\"> </center>";
+
+                row.appendChild(cell3);
+
+            } 
+
+            tbody.appendChild(row);
+
+
+            i++;
+        }
+
+        var divToPrint=document.getElementById("qrtable1");
+        var newWin= window.open("");
+        newWin.document.write(divToPrint.outerHTML);
+        newWin.print();
+        newWin.close();
+    }
 
     function addrow(index){
         var x=index;
@@ -449,6 +497,9 @@ $(document).ready(function(){
             GeneratePDF()
         });
 
+        jq('#printQR').on('click', function(){
+            printQR()
+        });
                     
         jq(window).load(update(linenum));
         // jq(window).on("load",update(linenum));
