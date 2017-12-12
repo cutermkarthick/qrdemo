@@ -1,3 +1,4 @@
+
 $(document).ready(function(){
 (function () {
     'use strict';
@@ -49,6 +50,7 @@ $(document).ready(function(){
             fontcolor: jq('#fontcolor').val(),
 
             image: jq('#img-buffer')[0]
+
         };
 
         jq('#container'+linenum).empty().qrcode(options);
@@ -70,6 +72,7 @@ $(document).ready(function(){
     function onImageInput() {
 
         var input = jq('#image')[0];
+
         if (input.files && input.files[0]) {
             var reader = new FileReader();
             reader.onload = function (event) {
@@ -80,6 +83,15 @@ $(document).ready(function(){
             reader.readAsDataURL(input.files[0]);
         }
     }
+
+    function isEmpty(obj) {
+    for(var key in obj) {
+        if(obj.hasOwnProperty(key))
+            return false;
+    }
+    return true;
+}
+
 
     function download() {
 
@@ -158,16 +170,25 @@ $(document).ready(function(){
         var elem = document.getElementById('qrtable1');
         var imgElements = document.querySelectorAll('#trqrtable1 tr td img');
 
+
         var data = doc.autoTableHtmlToJson(elem);
         var images = [];
         var i = 0;
         doc.autoTable(data.columns, data.rows, {
         bodyStyles: {rowHeight: 100},
         drawRow:function(row, data) {
+
             row.height = 100;
         },
         drawCell: function(cell, opts) {
+            
+       
+
+
             if (opts.column.dataKey === 2) {
+                if (typeof imgElements[i].src === "undefined"){
+                console.log('the property is not available...'); // print into console
+            }
                 images.push({
                 url: imgElements[i].src,
                 x: cell.textPos.x,
@@ -322,6 +343,9 @@ $(document).ready(function(){
         if (line >= 3) {
             var id = parseInt(line) - 1;
             $("#qrid"+id).attr('class','qridclass');
+            // $("#qrcontent"+id).attr('class','qrconclass');
+            // $("#qrcontent"+id).text();
+            // $("#container"+id).html();
             $('#row_close'+id).css('display','block');
         }
 
@@ -449,6 +473,10 @@ $(document).ready(function(){
     }
 
     function init() {
+
+        jq('#img-buffer').attr('src', 'images/logo-large-solid-pink.png');
+        jq('#mode').val('4');
+
         var linenum = 0;
 
         jq('#download').on('click', function(){
@@ -460,13 +488,20 @@ $(document).ready(function(){
         jq('#image').on('change', onImageInput);
 
         jq('textarea').on('input change', function(){
+
             linenum = jq(this).attr('qrcon_seq');
             var textval = jq(this).val();
             jq(this).attr('value', textval);
             update(linenum);
         });
 
-
+        $(document).on('input change','textarea', function()
+        { 
+            linenum = jq(this).attr('qrcon_seq');
+            var textval = jq(this).val();
+            jq(this).attr('value', textval);
+            update(linenum);
+        });
 
         $(document).on('input change','.qrconclass', function()
         {   
@@ -475,6 +510,18 @@ $(document).ready(function(){
 
         });
 
+        // $(document).on('input focus','.qrconclass', function()
+        // {
+
+        //     var qrcon_seq = jq(this).attr('qrcon_seq');
+        //     $("#qrcontent"+qrcon_seq).removeAttr("class");
+        //     if (qrcon_seq != "1") 
+        //     {
+                
+        //         addrow(qrcon_seq);
+        //         update(linenum);
+        //     }
+        // });
 
         $(document).on('input focus','.qridclass', function()
         {
@@ -515,10 +562,4 @@ $(document).ready(function(){
 
 
 });
-
-
-
-
-
-
 
